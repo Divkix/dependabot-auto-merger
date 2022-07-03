@@ -71,7 +71,7 @@ module.exports = (app) => {
     }
 
     const prMerger = pull_request.merged_by.login.toLowerCase();
-    const iAmMerger = (await getBotName()) === prMerger;
+    const iAmMerger = (await getBotName(context)) === prMerger;
     const owner = repository.owner.login;
     const repo = repository.name;
     const ref = `heads/${pull_request.head.ref}`;
