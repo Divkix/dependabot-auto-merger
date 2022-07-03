@@ -43,7 +43,7 @@ module.exports = (app) => {
       await context.octokit.rest.pulls.merge({
         repo: repo,
         owner: owner,
-        pull_number: pull_request.pull_number,
+        pull_number: pull_request.number,
         commit_title: config.skip_ci
           ? "[skip ci] Auto-merge dependabot PR"
           : "Auto-merge dependabot PR",
