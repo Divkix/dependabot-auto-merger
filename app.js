@@ -10,7 +10,7 @@ module.exports = (app) => {
   const config_filename =
     process.env.CONFIG_FILENAME || "dependabot-auto-merger.yml";
   const default_config = {
-    version: 2,
+    version: 1,
     "auto-merge-settings": {
       merge_level: "minor",
       merge_strategy: "squash",
