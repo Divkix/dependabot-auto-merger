@@ -44,7 +44,7 @@ function findBumpLevel(oldVersion, newVersion) {
  * @returns {Object} containing package name, old version, new version and bump level
  */
 function parsePrTitle(pullRequest) {
-  const expression = /bump (\S+) from (\S+) to (\S+)/i;
+  const expression = /bump (\S+) requirement from (\S+) to (\S+)/i;
   const match = expression.exec(pullRequest.title);
 
   if (!match) {
