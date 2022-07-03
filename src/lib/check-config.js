@@ -5,8 +5,7 @@ const config_filename =
 // default config file is there isn't one in ".github" directory
 const default_config = {
   version: 1, // default version of config file for this bot
-  "auto-merge-settings": {
-    dependencies_label: "dependencies", // default label for pull requests created by dependabot, should not be changed unless using custom dependabot settings
+  auto_merge_settings: {
     merge_level: "minor", // default merge level, can be "minor", "patch" or "major"
     merge_strategy: "squash", // default merge stratery, can be chosen out of "merge", "squash" and "rebase"
     skip_ci: false, // adds "[skip ci]" to commit title
@@ -14,24 +13,26 @@ const default_config = {
   },
 };
 
-// error message when config file is invalid
-invalid_config_message = `Config file is invalid!
-Take a look at the example config file [here](https://github.com/divideprojects/dependabot-auto-merger#config-file) to see how to create a valid config file.`;
-
-// function to read config file
+/**
+ *  function to read config file
+ * @param {Object} context - probot context
+ * @returns {Promise<Object>} - config file auto_merge_settings data
+ */
 async function read_config(context) {
-  // read config file
-  const config_data = await context.config(config_filename, default_config);
-  var valid_config = true;
+  const config_data = await context.config(config_filename, default_config); // read config file
+  const valid_config_array = [1, 2]; // array of valid config versions
 
   // if version is not 1, then throw error
-  if (config_data.version !== 1) {
-    valid_config = false;
+  if (!valid_config_array.includes(config_data.version)) {
     context.log.error(
       `Config file version ${config_data.version} is not supported!`,
     );
   }
 
   // read the merge settings
-  return valid_config, config_data["auto-merge-settings"];
+  return config_data.auto_merge_settings;
 }
+
+module.exports = {
+  read_config,
+};

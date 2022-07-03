@@ -35,9 +35,10 @@ The bot works even without a config file but creating one will help ypu customis
 
 Make a 'dependabot-auto-merger.yml' file in your `.github` folder of repository for more customised options.
 
+Default config file:
 ```yaml
 version: 1
-auto-merge-settings:
+auto_merge_settings:
     merge_level: "minor"
     merge_strategy: "squash"
     skip_ci: false

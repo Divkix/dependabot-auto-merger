@@ -6,3 +6,12 @@ async function comment(octokit, repo, { number }, body) {
     body,
   });
 }
+
+async function getBotName() {
+  return `${(await context.octokit.apps.getAuthenticated()).data.slug}[bot]`;
+}
+
+module.exports = {
+  comment,
+  getBotName,
+};
