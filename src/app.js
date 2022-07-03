@@ -1,7 +1,7 @@
 const { read_config } = require("./lib/check-config");
 const { getBotName } = require("./lib/api");
 const { dependabotAuthor } = require("./lib/getDependabotDetails");
-const { parsePrTitle } = require("./lib/util");
+const { parsePrTitle, matchBumpLevel } = require("./lib/util");
 
 /**
  * This is the main entrypoint to your Probot app
