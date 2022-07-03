@@ -1,6 +1,6 @@
 {
   "name": "dependabot-auto-merger",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Bot to merge dependabot PR's based on a simple config file.",
   "author": "Divide Projects",
@@ -16,7 +16,7 @@
   ],
   "scripts": {
     "dev": "nodemon --exec \"npm start\"",
-    "start": "probot run ./app.js",
+    "start": "probot run ./src/app.js",
     "test": "jest"
   },
   "dependencies": {
