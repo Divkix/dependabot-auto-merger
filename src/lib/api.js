@@ -7,7 +7,7 @@ async function comment(octokit, repo, { number }, body) {
   });
 }
 
-async function getBotName() {
+async function getBotName(context) {
   return `${(await context.octokit.apps.getAuthenticated()).data.slug}[bot]`;
 }
 
