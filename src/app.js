@@ -2,6 +2,7 @@ const { read_config } = require("./lib/check-config");
 const { getBotName } = require("./lib/api");
 const { dependabotAuthor } = require("./lib/getDependabotDetails");
 const { parsePrTitle, matchBumpLevel } = require("./lib/util");
+const { log } = require("./lib/log");
 
 /**
  * This is the main entrypoint to your Probot app
@@ -17,7 +18,7 @@ module.exports = (app) => {
     // check if the PR is from dependabot
     const isDependabotPR = pull_request.user.login === dependabotAuthor;
     if (!isDependabotPR) {
-      return context.log.info("PR not opened by dependabot[bot]");
+      return log(context).info("PR not opened by dependabot[bot]");
     }
 
     // get details from PR
@@ -26,7 +27,7 @@ module.exports = (app) => {
 
     // check if the bump level is allowed
     if (!matchBumpLevel(bumpLevel, config)) {
-      return context.log.error(
+      return log(context).error(
         `PR does not meet bump level settings so not merging!
         ${packageName}: ${oldVersion} -> ${newVersion}
         Current Level: ${config.merge_level}
@@ -45,14 +46,14 @@ module.exports = (app) => {
         owner: owner,
         pull_number: pull_request.number,
         commit_title: config.skip_ci
-          ? "[skip ci] Auto-merge dependabot PR"
-          : "Auto-merge dependabot PR",
+          ? `[skip ci] ${config.commit_title}`
+          : config.commit_title,
         // add [skip ci] to commit title if skip_ci is true in config file
-        commit_message: "Auto-merge dependabot PR by @dependabot-auto-merge",
+        commit_message: config.commit_message,
         merge_method: config.merge_strategy,
       });
     } catch (e) {
-      context.log.error(e);
+      return log(context).error(e);
     }
   });
 
@@ -66,25 +67,30 @@ module.exports = (app) => {
 
     // if pr is not merged, just closed, then do nothing
     if (!pull_request.merged) {
-      context.log.info("PR not merged, just closed!");
-      return;
+      return log(context).info("PR not merged, just closed!");
     }
 
-    const prMerger = pull_request.merged_by.login.toLowerCase();
-    const iAmMerger = (await getBotName(context)) === prMerger;
+    const iAmMerger =
+      (await getBotName(context)) ===
+      pull_request.merged_by.login.toLowerCase();
     const owner = repository.owner.login;
     const repo = repository.name;
     const ref = `heads/${pull_request.head.ref}`;
 
+    // check if the PR is merged by the bot
+    if (!iAmMerger) {
+      return log(context).info("PR not merged by me so not deleting branch!");
+    }
+
     // delete branch if branch is merged, merged by bot and delete_branch is true in config file
-    if (iAmMerger && config.delete_branch) {
+    if (config.delete_branch) {
       try {
         await context.octokit.rest.git.deleteRef({ owner, repo, ref });
       } catch (e) {
-        context.log.error(e);
+        return log(context).error(e);
       }
     } else {
-      context.log.info("PR not merged by me so not deleting.");
+      log(context).info("delete_branch set to false in config file");
     }
   });
 };

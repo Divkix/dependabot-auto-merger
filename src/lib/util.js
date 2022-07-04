@@ -1,5 +1,6 @@
 const semverCoerce = require("semver/functions/coerce");
 const semverValid = require("semver/functions/valid");
+const { log } = require("./log");
 
 /**
  * Checks if a version is a valid semver version.
@@ -48,13 +49,13 @@ function parsePrTitle(pullRequest) {
   const match = expression.exec(pullRequest.title);
 
   if (!match) {
-    throw new Error(
+    log(context).error(
       "Error while parsing PR title, expected title: `bump|update <package> requirement  from <old-version> to <new-version>`",
     );
   }
 
   // removing the first match because it is the whole string
-  const [,, packageName, oldVersion, newVersion] = match.map((t) =>
+  const [, , packageName, oldVersion, newVersion] = match.map((t) =>
     t.replace(/`/g, ""),
   );
   const isValid = isValidSemver(oldVersion) && isValidSemver(newVersion);

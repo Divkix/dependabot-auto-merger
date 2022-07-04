@@ -1,3 +1,5 @@
+const { log } = require("./log");
+
 // config file for the app
 const config_filename =
   process.env.CONFIG_FILENAME || "dependabot-auto-merger.yml";
@@ -10,6 +12,8 @@ const default_config = {
     merge_strategy: "squash", // default merge stratery, can be chosen out of "merge", "squash" and "rebase"
     skip_ci: false, // adds "[skip ci]" to commit title
     delete_branch: true, // delete the branch after merging
+    commit_title: "Auto-merge dependabot PR", // default commit title
+    commit_message: "Auto-merge dependabot PR by @dependabot-auto-merge", // default commit message
   },
 };
 
@@ -24,7 +28,7 @@ async function read_config(context) {
 
   // if version is not 1, then throw error
   if (!valid_config_array.includes(config_data.version)) {
-    context.log.error(
+    log(context).error(
       `Config file version ${config_data.version} is not supported!`,
     );
   }
