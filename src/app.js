@@ -86,7 +86,13 @@ module.exports = (app) => {
     const repo = repository.name;
 
     // merge the pull request
-    // return await mergePullRequest(context, { owner, repo, pullRequest });
+    // return await mergePullRequest(context, { owner, repo, pullRequest })
+
+    // get details from PR
+    const { packageName, oldVersion, newVersion } = parsePrTitle(
+      pullRequest,
+      context,
+    );
 
     // try merging the PR
     const config = await readConfig(context);

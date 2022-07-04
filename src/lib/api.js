@@ -1,4 +1,6 @@
 const { readConfig } = require('./check-config');
+const { parsePrTitle } = require('./util');
+const log = require('./log');
 
 // function used to comment on a issue
 async function comment(octokit, repo, { number }, body) {
@@ -16,6 +18,12 @@ async function getBotName(context) {
 async function mergePullRequest(context, { owner, repo, pullRequest }) {
   // read the config
   const { config } = await readConfig(context);
+
+  // get details from PR
+  const { packageName, oldVersion, newVersion } = parsePrTitle(
+    pullRequest,
+    context,
+  );
 
   // try merging the PR
   try {
