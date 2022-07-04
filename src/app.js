@@ -1,5 +1,5 @@
 const { readConfig } = require('./lib/check-config');
-const { getBotName } = require('./lib/api');
+const { getBotName, mergePullRequest } = require('./lib/api');
 const { dependabotAuthor } = require('./lib/getDependabotDetails');
 const { parsePrTitle, matchBumpLevel } = require('./lib/util');
 const log = require('./lib/log');
@@ -42,6 +42,8 @@ module.exports = (app) => {
     const owner = repository.owner.login;
     const repo = repository.name;
 
+    // merge the pull request
+    // return await mergePullRequest(context, { owner, repo, pullRequest });
     // try merging the PR
     try {
       await context.octokit.rest.pulls.merge({
@@ -59,7 +61,52 @@ module.exports = (app) => {
       if (e.message.includes('Pull Request is not mergeable')) {
         return log.error(context).error(
           `Merge conflict!
-          ${packageName}: ${oldVersion} -> ${newVersion}`,
+        ${packageName}: ${oldVersion} -> ${newVersion}`,
+        );
+      }
+    }
+  });
+
+  // to run when a pull request us edited, specifically to run after dependabot has rebased a PR
+  app.on('pull_request.edited', async (context) => {
+    // get details from payload
+    const { pull_request: pullRequest } = context.payload;
+
+    // check if pr is merged
+    if (pullRequest.merged) {
+      return log.info(context, 'PR is already merged!');
+    }
+
+    if (pullRequest.body.includes('Dependabot is rebasing this PR')) {
+      return log.info(context, 'PR is being rebased by dependabot[bot]');
+    }
+
+    // gather details
+    const owner = repository.owner.login;
+    const repo = repository.name;
+
+    // merge the pull request
+    // return await mergePullRequest(context, { owner, repo, pullRequest });
+
+    // try merging the PR
+    const config = await readConfig(context);
+    try {
+      await context.octokit.rest.pulls.merge({
+        repo,
+        owner,
+        pull_number: pullRequest.number,
+        commit_title: config.skip_ci
+          ? `[skip ci] ${config.commit_title}`
+          : config.commit_title,
+        // add [skip ci] to commit title if skip_ci is true in config file
+        commit_message: config.commit_message,
+        merge_method: config.merge_strategy,
+      });
+    } catch (e) {
+      if (e.message.includes('Pull Request is not mergeable')) {
+        return log.error(context).error(
+          `Merge conflict!
+        ${packageName}: ${oldVersion} -> ${newVersion}`,
         );
       }
     }
@@ -68,7 +115,7 @@ module.exports = (app) => {
   // to run when a pull_request is closed
   app.on('pull_request.closed', async (context) => {
     // get the config
-    const { config } = await readConfig(context);
+    const config = await readConfig(context);
 
     // check if the PR is merged or not
     const { pull_request: pullRequest, repository } = context.payload;
@@ -94,10 +141,15 @@ module.exports = (app) => {
       try {
         await context.octokit.rest.git.deleteRef({ owner, repo, ref });
       } catch (e) {
+        if (e.message.includes('Reference does not exist')) {
+          return log.info(context, 'Branch already deleted!');
+        }
         return log.error(context, e);
       }
     } else {
       log.info(context, 'delete_branch set to false in config file');
     }
+
+    return;
   });
 };
