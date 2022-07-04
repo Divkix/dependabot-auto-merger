@@ -70,7 +70,7 @@ module.exports = (app) => {
   // to run when a pull request us edited, specifically to run after dependabot has rebased a PR
   app.on('pull_request.edited', async (context) => {
     // get details from payload
-    const { pull_request: pullRequest } = context.payload;
+    const { pull_request: pullRequest, repository } = context.payload;
 
     // check if pr is merged
     if (pullRequest.merged) {
