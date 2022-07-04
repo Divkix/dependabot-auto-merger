@@ -43,28 +43,8 @@ module.exports = (app) => {
     const repo = repository.name;
 
     // merge the pull request
-    // return await mergePullRequest(context, { owner, repo, pullRequest });
-    // try merging the PR
-    try {
-      await context.octokit.rest.pulls.merge({
-        repo,
-        owner,
-        pull_number: pullRequest.number,
-        commit_title: config.skip_ci
-          ? `[skip ci] ${config.commit_title}`
-          : config.commit_title,
-        // add [skip ci] to commit title if skip_ci is true in config file
-        commit_message: config.commit_message,
-        merge_method: config.merge_strategy,
-      });
-    } catch (e) {
-      if (e.message.includes('Pull Request is not mergeable')) {
-        return log.error(context).error(
-          `Merge conflict!
-        ${packageName}: ${oldVersion} -> ${newVersion}`,
-        );
-      }
-    }
+    await mergePullRequest(context, { owner, repo, pullRequest });
+    return;
   });
 
   // to run when a pull request us edited, specifically to run after dependabot has rebased a PR
@@ -86,36 +66,8 @@ module.exports = (app) => {
     const repo = repository.name;
 
     // merge the pull request
-    // return await mergePullRequest(context, { owner, repo, pullRequest })
-
-    // get details from PR
-    const { packageName, oldVersion, newVersion } = parsePrTitle(
-      pullRequest,
-      context,
-    );
-
-    // try merging the PR
-    const config = await readConfig(context);
-    try {
-      await context.octokit.rest.pulls.merge({
-        repo,
-        owner,
-        pull_number: pullRequest.number,
-        commit_title: config.skip_ci
-          ? `[skip ci] ${config.commit_title}`
-          : config.commit_title,
-        // add [skip ci] to commit title if skip_ci is true in config file
-        commit_message: config.commit_message,
-        merge_method: config.merge_strategy,
-      });
-    } catch (e) {
-      if (e.message.includes('Pull Request is not mergeable')) {
-        return log.error(context).error(
-          `Merge conflict!
-        ${packageName}: ${oldVersion} -> ${newVersion}`,
-        );
-      }
-    }
+    await mergePullRequest(context, { owner, repo, pullRequest });
+    return;
   });
 
   // to run when a pull_request is closed
@@ -153,9 +105,11 @@ module.exports = (app) => {
         return log.error(context, e);
       }
     } else {
-      log.info(context, 'delete_branch set to false in config file');
+      log.info(
+        context,
+        'delete_branch set to false in config file, not deleting branch!',
+      );
     }
-
     return;
   });
 };

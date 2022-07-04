@@ -15,6 +15,7 @@ async function getBotName(context) {
   return `${(await context.octokit.apps.getAuthenticated()).data.slug}[bot]`;
 }
 
+// helper function to merge a pull request
 async function mergePullRequest(context, { owner, repo, pullRequest }) {
   // read the config
   const { config } = await readConfig(context);
@@ -40,11 +41,13 @@ async function mergePullRequest(context, { owner, repo, pullRequest }) {
     });
   } catch (e) {
     if (e.message.includes('Pull Request is not mergeable')) {
-      return log.error(context).error(
+      return log.info(
+        context,
         `Merge conflict!
         ${packageName}: ${oldVersion} -> ${newVersion}`,
       );
     }
+    return log.error(context, e);
   }
 }
 
