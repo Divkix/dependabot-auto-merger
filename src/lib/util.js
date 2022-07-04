@@ -45,13 +45,15 @@ function findBumpLevel(oldVersion, newVersion) {
  * @returns {Object} containing package name, old version, new version and bump level
  */
 function parsePrTitle(pullRequest, context) {
-  const expression = /(bump|update) (\S+) requirement from (\S+) to (\S+)/i;
+  const expression =
+    /^(bump|update) (\S+) (?:requirement )?from (\S+) to (\S+)$/gi;
   const match = expression.exec(pullRequest.title);
 
   if (!match) {
     log.error(
       context,
-      'Error while parsing PR title, expected title: `bump|update <package> requirement  from <old-version> to <new-version>`',
+      'Error while parsing PR title, expected title: `bump|update <package> requirement  from <old-version> to <new-version>`' +
+        `\nCurrent: ${pullRequest.title}`,
     );
   }
 
