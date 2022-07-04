@@ -1,6 +1,6 @@
-const semverCoerce = require("semver/functions/coerce");
-const semverValid = require("semver/functions/valid");
-const { log } = require("./log");
+const semverCoerce = require('semver/functions/coerce');
+const semverValid = require('semver/functions/valid');
+const log = require('./log');
 
 /**
  * Checks if a version is a valid semver version.
@@ -10,13 +10,13 @@ const { log } = require("./log");
  * @returns Boolean indicating whether version is valid
  */
 function isValidSemver(version) {
-  const isNumber = !isNaN(+version);
+  const isNumber = Number.isNaN(+version);
 
   if (isNumber) {
     return semverValid(semverCoerce(version));
   }
 
-  return semverValid(version.replace(/[\^~v]/g, ""), { loose: true });
+  return semverValid(version.replace(/[\^~v]/g, ''), { loose: true });
 }
 
 /**
@@ -27,16 +27,16 @@ function isValidSemver(version) {
  */
 function findBumpLevel(oldVersion, newVersion) {
   if (oldVersion === newVersion) {
-    return "none";
+    return 'none';
   }
 
   if (semverCoerce(oldVersion).major === semverCoerce(newVersion).major) {
     if (semverCoerce(oldVersion).minor === semverCoerce(newVersion).minor) {
-      return "patch";
+      return 'patch';
     }
-    return "minor";
+    return 'minor';
   }
-  return "major";
+  return 'major';
 }
 
 /**
@@ -44,24 +44,25 @@ function findBumpLevel(oldVersion, newVersion) {
  * @param {String} pullRequest;
  * @returns {Object} containing package name, old version, new version and bump level
  */
-function parsePrTitle(pullRequest) {
+function parsePrTitle(pullRequest, context) {
   const expression = /(bump|update) (\S+) requirement from (\S+) to (\S+)/i;
   const match = expression.exec(pullRequest.title);
 
   if (!match) {
-    log(context).error(
-      "Error while parsing PR title, expected title: `bump|update <package> requirement  from <old-version> to <new-version>`",
+    log.error(
+      context,
+      'Error while parsing PR title, expected title: `bump|update <package> requirement  from <old-version> to <new-version>`',
     );
   }
 
   // removing the first match because it is the whole string
   const [, , packageName, oldVersion, newVersion] = match.map((t) =>
-    t.replace(/`/g, ""),
+    t.replace(/`/g, ''),
   );
   const isValid = isValidSemver(oldVersion) && isValidSemver(newVersion);
 
   return {
-    packageName: packageName,
+    packageName,
     oldVersion: isValid ? semverCoerce(oldVersion)?.raw : oldVersion,
     newVersion: isValid ? semverCoerce(newVersion)?.raw : newVersion,
     bumpLevel: findBumpLevel(oldVersion, newVersion),
@@ -76,17 +77,17 @@ function parsePrTitle(pullRequest) {
  * @returns {Boolean}
  */
 function matchBumpLevel(bumpLevel, config) {
-  major_array = ["major", "minor", "patch"];
-  minor_array = ["minor", "patch"];
-  patch_array = ["patch"];
+  const majorArray = ['major', 'minor', 'patch'];
+  const minorArray = ['minor', 'patch'];
+  const patchArray = ['patch'];
 
   switch (config.merge_level) {
-    case "major":
-      return major_array.includes(bumpLevel);
-    case "minor":
-      return minor_array.includes(bumpLevel);
-    case "patch":
-      return patch_array.includes(bumpLevel);
+    case 'major':
+      return majorArray.includes(bumpLevel);
+    case 'minor':
+      return minorArray.includes(bumpLevel);
+    case 'patch':
+      return patchArray.includes(bumpLevel);
     default:
       return false;
   }

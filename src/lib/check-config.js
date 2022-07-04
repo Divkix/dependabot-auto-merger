@@ -1,19 +1,19 @@
-const { log } = require("./log");
+const log = require('./log');
 
 // config file for the app
-const config_filename =
-  process.env.CONFIG_FILENAME || "dependabot-auto-merger.yml";
+const configFilename =
+  process.env.CONFIG_FILENAME || 'dependabot-auto-merger.yml';
 
 // default config file is there isn't one in ".github" directory
-const default_config = {
+const defaultConfig = {
   version: 1, // default version of config file for this bot
   auto_merge_settings: {
-    merge_level: "minor", // default merge level, can be "minor", "patch" or "major"
-    merge_strategy: "squash", // default merge stratery, can be chosen out of "merge", "squash" and "rebase"
+    merge_level: 'minor', // default merge level, can be "minor", "patch" or "major"
+    merge_strategy: 'squash', // default merge stratery, can be chosen out of "merge", "squash" and "rebase"
     skip_ci: false, // adds "[skip ci]" to commit title
     delete_branch: true, // delete the branch after merging
-    commit_title: "Auto-merge dependabot PR", // default commit title
-    commit_message: "Auto-merge dependabot PR by @dependabot-auto-merge", // default commit message
+    commit_title: 'Auto-merge dependabot PR', // default commit title
+    commit_message: 'Auto-merge dependabot PR by @dependabot-auto-merge', // default commit message
   },
 };
 
@@ -22,21 +22,22 @@ const default_config = {
  * @param {Object} context - probot context
  * @returns {Promise<Object>} - config file auto_merge_settings data
  */
-async function read_config(context) {
-  const config_data = await context.config(config_filename, default_config); // read config file
-  const valid_config_array = [1, 2]; // array of valid config versions
+async function readConfig(context) {
+  const configData = await context.config(configFilename, defaultConfig); // read config file
+  const validConfigArray = [1, 2]; // array of valid config versions
 
   // if version is not 1, then throw error
-  if (!valid_config_array.includes(config_data.version)) {
-    log(context).error(
-      `Config file version ${config_data.version} is not supported!`,
+  if (!validConfigArray.includes(configData.version)) {
+    log.error(
+      context,
+      `Config file version ${configData.version} is not supported!`,
     );
   }
 
   // read the merge settings
-  return config_data.auto_merge_settings;
+  return configData.auto_merge_settings;
 }
 
 module.exports = {
-  read_config,
+  readConfig,
 };

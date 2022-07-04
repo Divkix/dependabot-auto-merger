@@ -1,4 +1,4 @@
-const dependabotAuthor = "dependabot[bot]";
+const dependabotAuthor = 'dependabot[bot]';
 
 module.exports = {
   dependabotAuthor,

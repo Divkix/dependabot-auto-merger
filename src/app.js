@@ -1,8 +1,8 @@
-const { read_config } = require("./lib/check-config");
-const { getBotName } = require("./lib/api");
-const { dependabotAuthor } = require("./lib/getDependabotDetails");
-const { parsePrTitle, matchBumpLevel } = require("./lib/util");
-const { log } = require("./lib/log");
+const { readConfig } = require('./lib/check-config');
+const { getBotName } = require('./lib/api');
+const { dependabotAuthor } = require('./lib/getDependabotDetails');
+const { parsePrTitle, matchBumpLevel } = require('./lib/util');
+const log = require('./lib/log');
 
 /**
  * This is the main entrypoint to your Probot app
@@ -10,24 +10,27 @@ const { log } = require("./lib/log");
  */
 module.exports = (app) => {
   // to run when a pull request is opened
-  app.on(["pull_request.opened", "pull_request.reopened"], async (context) => {
+  app.on(['pull_request.opened', 'pull_request.reopened'], async (context) => {
     // load config and get details from payload
-    const config = await read_config(context);
-    const { pull_request, repository } = context.payload;
+    const config = await readConfig(context);
+    const { pull_request: pullRequest, repository } = context.payload;
 
     // check if the PR is from dependabot
-    const isDependabotPR = pull_request.user.login === dependabotAuthor;
+    const isDependabotPR = pullRequest.user.login === dependabotAuthor;
     if (!isDependabotPR) {
-      return log(context).info("PR not opened by dependabot[bot]");
+      return log.info(context, 'PR not opened by dependabot[bot]');
     }
 
     // get details from PR
-    const { packageName, oldVersion, newVersion, bumpLevel } =
-      parsePrTitle(pull_request);
+    const { packageName, oldVersion, newVersion, bumpLevel } = parsePrTitle(
+      pullRequest,
+      context,
+    );
 
     // check if the bump level is allowed
     if (!matchBumpLevel(bumpLevel, config)) {
-      return log(context).error(
+      return log.error(
+        context,
         `PR does not meet bump level settings so not merging!
         ${packageName}: ${oldVersion} -> ${newVersion}
         Current Level: ${config.merge_level}
@@ -42,9 +45,9 @@ module.exports = (app) => {
     // try merging the PR
     try {
       await context.octokit.rest.pulls.merge({
-        repo: repo,
-        owner: owner,
-        pull_number: pull_request.number,
+        repo,
+        owner,
+        pull_number: pullRequest.number,
         commit_title: config.skip_ci
           ? `[skip ci] ${config.commit_title}`
           : config.commit_title,
@@ -53,33 +56,37 @@ module.exports = (app) => {
         merge_method: config.merge_strategy,
       });
     } catch (e) {
-      return log(context).error(e);
+      if (e.message.includes('Pull Request is not mergeable')) {
+        return log.error(context).error(
+          `Merge conflict!
+          ${packageName}: ${oldVersion} -> ${newVersion}`,
+        );
+      }
     }
   });
 
   // to run when a pull_request is closed
-  app.on("pull_request.closed", async (context) => {
+  app.on('pull_request.closed', async (context) => {
     // get the config
-    const { config } = await read_config(context);
+    const { config } = await readConfig(context);
 
     // check if the PR is merged or not
-    const { pull_request, repository } = context.payload;
+    const { pull_request: pullRequest, repository } = context.payload;
 
     // if pr is not merged, just closed, then do nothing
-    if (!pull_request.merged) {
-      return log(context).info("PR not merged, just closed!");
+    if (!pullRequest.merged) {
+      return log.info(context, 'PR not merged, just closed!');
     }
 
     const iAmMerger =
-      (await getBotName(context)) ===
-      pull_request.merged_by.login.toLowerCase();
+      (await getBotName(context)) === pullRequest.merged_by.login.toLowerCase();
     const owner = repository.owner.login;
     const repo = repository.name;
-    const ref = `heads/${pull_request.head.ref}`;
+    const ref = `heads/${pullRequest.head.ref}`;
 
     // check if the PR is merged by the bot
     if (!iAmMerger) {
-      return log(context).info("PR not merged by me so not deleting branch!");
+      return log.info(context, 'PR not merged by me so not deleting branch!');
     }
 
     // delete branch if branch is merged, merged by bot and delete_branch is true in config file
@@ -87,10 +94,10 @@ module.exports = (app) => {
       try {
         await context.octokit.rest.git.deleteRef({ owner, repo, ref });
       } catch (e) {
-        return log(context).error(e);
+        return log.error(context, e);
       }
     } else {
-      log(context).info("delete_branch set to false in config file");
+      log.info(context, 'delete_branch set to false in config file');
     }
   });
 };

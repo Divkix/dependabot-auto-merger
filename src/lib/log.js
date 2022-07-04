@@ -1,18 +1,15 @@
-function log(context) {
-  return {
-    error: function (message) {
-      context.log.error(message);
-      throw new error(message);
-    },
-    info: function (message) {
-      context.log.info(message);
-    },
-    warn: function (message) {
-      context.log.warn(message);
-    },
-  };
+function info(context, message) {
+  const logger = context.log;
+  logger.info(message);
+}
+
+function error(context, message) {
+  const logger = context.log;
+  logger.error(message);
+  throw new Error(message);
 }
 
 module.exports = {
-  log,
+  info,
+  error,
 };
