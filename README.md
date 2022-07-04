@@ -39,10 +39,12 @@ Default config file:
 ```yaml
 version: 1
 auto_merge_settings:
-    merge_level: "minor"
-    merge_strategy: "squash"
+    merge_level: minor
+    merge_strategy: squash
     skip_ci: false
     delete_branch: true
+    commit_title: Auto-merge dependabot PR
+    commit_message: Auto-merge dependabot PR by @dependabot-auto-merge
 ```
 
 
