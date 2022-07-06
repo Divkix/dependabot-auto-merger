@@ -18,7 +18,7 @@ async function getBotName(context) {
 // helper function to merge a pull request
 async function mergePullRequest(context, { owner, repo, pullRequest }) {
   // read the config
-  const { config } = await readConfig(context);
+  const config = await readConfig(context);
 
   // get details from PR
   const { packageName, oldVersion, newVersion } = parsePrTitle(
