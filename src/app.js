@@ -85,14 +85,16 @@ module.exports = (app) => {
 
     const iAmMerger =
       (await getBotName(context)) === pullRequest.merged_by.login.toLowerCase();
-    const owner = repository.owner.login;
-    const repo = repository.name;
-    const ref = `heads/${pullRequest.head.ref}`;
 
     // check if the PR is merged by the bot
     if (!iAmMerger) {
       return log.info(context, 'PR not merged by me so not deleting branch!');
     }
+
+    // gather details
+    const owner = repository.owner.login;
+    const repo = repository.name;
+    const ref = `heads/${pullRequest.head.ref}`;
 
     // delete branch if branch is merged, merged by bot and delete_branch is true in config file
     if (config.delete_branch) {
