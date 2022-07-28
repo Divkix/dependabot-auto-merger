@@ -70,6 +70,7 @@ function parsePrTitle(pullRequest, context) {
     bumpLevel: findBumpLevel(oldVersion, newVersion),
   };
 }
+
 /**
  * function to match bump level settings
  * if bump level is minor, merge PRs with minor and patch bump

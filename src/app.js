@@ -1,5 +1,9 @@
 const { readConfig } = require('./lib/check-config');
-const { getBotName, mergePullRequest } = require('./lib/api');
+const {
+  getBotName,
+  mergePullRequest,
+  allCheckRunsCompleted,
+} = require('./lib/api');
 const { dependabotAuthor } = require('./lib/getDependabotDetails');
 const { parsePrTitle, matchBumpLevel } = require('./lib/util');
 const log = require('./lib/log');
@@ -41,9 +45,18 @@ module.exports = (app) => {
     // gather details
     const owner = repository.owner.login;
     const repo = repository.name;
+    const ref = `heads/${pullRequest.head.ref}`;
+
+    // check if config tells to skip check runs
+    if (!config.skip_check_runs) {
+      // check if all check runs are completed
+      if (!allCheckRunsCompleted(context, owner, repo, ref)) {
+        return log.info(context, 'Check runs are not completed yet!');
+      }
+    }
 
     // merge the pull request
-    await mergePullRequest(context, { owner, repo, pullRequest });
+    await mergePullRequest(context, owner, repo, pullRequest);
     return;
   });
 
@@ -64,9 +77,18 @@ module.exports = (app) => {
     // gather details
     const owner = repository.owner.login;
     const repo = repository.name;
+    const ref = `heads/${pullRequest.head.ref}`;
+
+    // check if config tells to skip check runs
+    if (!config.skip_check_runs) {
+      // check if all check runs are completed
+      if (!allCheckRunsCompleted(context, owner, repo, ref)) {
+        return log.info(context, 'Check runs are not completed yet!');
+      }
+    }
 
     // merge the pull request
-    await mergePullRequest(context, { owner, repo, pullRequest });
+    await mergePullRequest(context, owner, repo, pullRequest);
     return;
   });
 

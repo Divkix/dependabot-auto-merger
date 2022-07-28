@@ -45,6 +45,7 @@ auto_merge_settings:
     delete_branch: true
     commit_title: Auto-merge dependabot PR
     commit_message: Auto-merge dependabot PR by @dependabot-auto-merge
+    skip_check_runs: false
 ```
 
 

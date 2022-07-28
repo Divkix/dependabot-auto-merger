@@ -1,8 +1,7 @@
 const log = require('./log');
 
 // config file for the app
-const configFilename =
-  process.env.CONFIG_FILENAME || 'dependabot-auto-merger.yml';
+const configFilename = 'dependabot-auto-merger.yml';
 
 // default config file is there isn't one in ".github" directory
 const defaultConfig = {
@@ -14,17 +13,18 @@ const defaultConfig = {
     delete_branch: true, // delete the branch after merging
     commit_title: 'Auto-merge dependabot PR', // default commit title
     commit_message: 'Auto-merge dependabot PR by @dependabot-auto-merge', // default commit message
+    skip_check_runs: false, // do not skip check runs by default
   },
 };
 
 /**
  *  function to read config file
  * @param {Object} context - probot context
- * @returns {Promise<Object>} - config file auto_merge_settings data
+ * @returns {Object} - config file auto_merge_settings data
  */
 async function readConfig(context) {
   const configData = await context.config(configFilename, defaultConfig); // read config file
-  const validConfigArray = [1, 2]; // array of valid config versions
+  const validConfigArray = [1]; // array of valid config versions
 
   // if version is not 1, then throw error
   if (!validConfigArray.includes(configData.version)) {
