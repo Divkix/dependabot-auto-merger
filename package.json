@@ -1,6 +1,6 @@
 {
   "name": "dependabot-auto-merger",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "private": true,
   "description": "Bot to merge dependabot PR's based on a simple config file.",
   "author": "Divide Projects",
@@ -12,26 +12,22 @@
     "probot-app",
     "dependabot",
     "dependabot-auto-merger",
-    "dependabot-merger"
+    "dependabot-merger",
+    "merge dependabot pr"
   ],
   "scripts": {
     "dev": "nodemon --exec \"npm start\"",
-    "start": "probot run ./app.js",
-    "test": "jest"
+    "start": "probot run ./src/app.js"
   },
   "dependencies": {
-    "probot": "^12.2.4"
+    "probot": "^12.2.4",
+    "semver": "^7.3.7"
   },
   "devDependencies": {
-    "jest": "^28.1.3",
-    "nock": "^13.2.9",
     "nodemon": "^2.0.19",
     "smee-client": "^1.2.2"
   },
   "engines": {
     "node": ">= 10.13.0"
-  },
-  "jest": {
-    "testEnvironment": "node"
   }
 }
