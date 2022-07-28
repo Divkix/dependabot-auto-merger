@@ -1,7 +1,6 @@
 const { readConfig } = require('./check-config');
 const { parsePrTitle } = require('./util');
 const log = require('./log');
-const { Probot } = require('probot');
 
 // function used to comment on a issue
 async function comment(octokit, repo, { number }, body) {
@@ -34,6 +33,9 @@ async function mergePullRequest(context, owner, repo, pullRequest) {
     context,
   );
 
+  // check if pr has been merged without errors
+  let mergeStatus = false;
+
   // try merging the PR
   try {
     await context.octokit.rest.pulls.merge({
@@ -47,6 +49,8 @@ async function mergePullRequest(context, owner, repo, pullRequest) {
       commit_message: config.commit_message,
       merge_method: config.merge_strategy,
     });
+    mergeStatus = true;
+    log.info(context, `Merged PR ${pullRequest.number}`);
   } catch (e) {
     if (e.message.includes('Pull Request is not mergeable')) {
       return log.info(
@@ -55,8 +59,10 @@ async function mergePullRequest(context, owner, repo, pullRequest) {
         ${packageName}: ${oldVersion} -> ${newVersion}`,
       );
     }
-    return log.error(context, e);
+    log.error(context, e);
   }
+
+  return mergeStatus;
 }
 
 /**

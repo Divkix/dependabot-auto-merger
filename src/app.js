@@ -3,6 +3,7 @@ const {
   getBotName,
   mergePullRequest,
   allCheckRunsCompleted,
+  comment,
 } = require('./lib/api');
 const { dependabotAuthor } = require('./lib/getDependabotDetails');
 const { parsePrTitle, matchBumpLevel } = require('./lib/util');
@@ -56,7 +57,15 @@ module.exports = (app) => {
     }
 
     // merge the pull request
-    await mergePullRequest(context, owner, repo, pullRequest);
+    const isMerged = await mergePullRequest(context, owner, repo, pullRequest);
+    if (isMerged) {
+      await comment(
+        context.octokit,
+        repo,
+        pullRequest.number,
+        'Merged Pull Request!',
+      );
+    }
     return;
   });
 
@@ -88,7 +97,15 @@ module.exports = (app) => {
     }
 
     // merge the pull request
-    await mergePullRequest(context, owner, repo, pullRequest);
+    const isMerged = await mergePullRequest(context, owner, repo, pullRequest);
+    if (isMerged) {
+      await comment(
+        context.octokit,
+        repo,
+        { number: pullRequest.number },
+        'Merged Pull Request!',
+      );
+    }
     return;
   });
 
