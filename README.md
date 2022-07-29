@@ -2,6 +2,8 @@
 
 > A GitHub App built with [Probot](https://github.com/probot/probot) that Bot to merge dependabot PR's based on a simple config file.
 
+[![Codacy Badge](https://app.codacy.com/project/badge/Grade/fb0af1397e654d648a12ba1f8fdd3097)](https://www.codacy.com/gh/Divkix/dependabot-auto-merger/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Divkix/dependabot-auto-merger&amp;utm_campaign=Badge_Grade)
+
 This bot is hosted on vercel!
 
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fdivideprojects%2Fdependabot-auto-merger)
