@@ -4,6 +4,7 @@
 
 This bot is hosted on vercel!
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/b32ce9c3a048422c9a347593cae50e70)](https://app.codacy.com/gh/Divkix/dependabot-auto-merger?utm_source=github.com&utm_medium=referral&utm_content=Divkix/dependabot-auto-merger&utm_campaign=Badge_Grade_Settings)
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fdivideprojects%2Fdependabot-auto-merger)
 
 ## Setup
