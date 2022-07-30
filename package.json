@@ -1,11 +1,11 @@
 {
   "name": "dependabot-auto-merger",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "private": true,
   "description": "Bot to merge dependabot PR's based on a simple config file.",
-  "author": "Divide Projects",
+  "author": "Divkix",
   "license": "ISC",
-  "homepage": "https://github.com/",
+  "homepage": "https://github.com/apps/dependabot-auto-merger",
   "keywords": [
     "probot",
     "github",
