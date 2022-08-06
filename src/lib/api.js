@@ -3,11 +3,13 @@ const { parsePrTitle } = require('./util');
 const log = require('./log');
 
 // function used to comment on a issue
-async function comment(octokit, repo, { number }, body) {
+//TODO: fix this, url is not correct
+async function comment(octokit, repo, number, body) {
   await octokit.issues.createComment({
-    ...repo,
     issue_number: number,
-    body,
+    owner: repo.owner,
+    repo: repo.repo,
+    body: body,
   });
 }
 

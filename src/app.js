@@ -34,7 +34,7 @@ module.exports = (app) => {
 
     // check if the bump level is allowed
     if (!matchBumpLevel(bumpLevel, config)) {
-      return log.error(
+      return log.info(
         context,
         `PR does not meet bump level settings so not merging!
         ${packageName}: ${oldVersion} -> ${newVersion}
@@ -57,15 +57,15 @@ module.exports = (app) => {
     }
 
     // merge the pull request
-    const isMerged = await mergePullRequest(context, owner, repo, pullRequest);
-    if (isMerged) {
-      await comment(
-        context.octokit,
-        repo,
-        pullRequest.number,
-        'Merged Pull Request!',
-      );
-    }
+    // const isMerged = await mergePullRequest(context, owner, repo, pullRequest);
+    // if (isMerged) {
+    //   await comment(
+    //     context.octokit,
+    //     repo,
+    //     pullRequest.number,
+    //     'Merged Pull Request 👍',
+    //   );
+    // }
     return;
   });
 
@@ -98,15 +98,15 @@ module.exports = (app) => {
     }
 
     // merge the pull request
-    const isMerged = await mergePullRequest(context, owner, repo, pullRequest);
-    if (isMerged) {
-      await comment(
-        context.octokit,
-        repo,
-        { number: pullRequest.number },
-        'Merged Pull Request!',
-      );
-    }
+    // const isMerged = await mergePullRequest(context, owner, repo, pullRequest);
+    // if (isMerged) {
+    //   await comment(
+    //     context.octokit,
+    //     repo,
+    //     pullRequest.number,
+    //     'Merged Pull Request 👍',
+    //   );
+    // }
     return;
   });
 
