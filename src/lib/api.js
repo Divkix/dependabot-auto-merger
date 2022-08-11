@@ -3,13 +3,13 @@ const { parsePrTitle } = require('./util');
 const log = require('./log');
 
 // function used to comment on a issue
-//TODO: fix this, url is not correct
+// TODO: fix this, url is not correct
 async function comment(octokit, repo, number, body) {
   await octokit.issues.createComment({
     issue_number: number,
     owner: repo.owner,
     repo: repo.repo,
-    body: body,
+    body,
   });
 }
 
@@ -76,14 +76,14 @@ async function mergePullRequest(context, owner, repo, pullRequest) {
  * @returns {boolean} - true if the PR is mergeable, false otherwise
  */
 async function allCheckRunsCompleted(context, owner, repo, ref) {
-  const octokit = context.octokit;
+  const { octokit } = context;
   const checkRuns = (
     await octokit.request(
       'GET /repos/{owner}/{repo}/commits/{ref}/check-runs',
       {
-        owner: owner,
-        repo: repo,
-        ref: ref,
+        owner,
+        repo,
+        ref,
       },
     )
   ).data.check_runs;

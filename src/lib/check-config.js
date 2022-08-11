@@ -35,8 +35,8 @@ async function readConfig(context) {
   }
 
   // add bot as co-author
-  configData.auto_merge_settings.commit_message +=
-    '\n\nCo-authored-by: dependabot-auto-merger[bot] <108586022+dependabot-auto-merger[bot]@users.noreply.github.com>';
+  configData.auto_merge_settings.commit_message
+    += '\n\nCo-authored-by: dependabot-auto-merger[bot] <108586022+dependabot-auto-merger[bot]@users.noreply.github.com>';
 
   // read the merge settings
   return configData.auto_merge_settings;

@@ -1,9 +1,9 @@
 const { readConfig } = require('./lib/check-config');
 const {
   getBotName,
-  mergePullRequest,
+  // mergePullRequest,
   allCheckRunsCompleted,
-  comment,
+  // comment,
 } = require('./lib/api');
 const { dependabotAuthor } = require('./lib/getDependabotDetails');
 const { parsePrTitle, matchBumpLevel } = require('./lib/util');
@@ -27,7 +27,9 @@ module.exports = (app) => {
     }
 
     // get details from PR
-    const { packageName, oldVersion, newVersion, bumpLevel } = parsePrTitle(
+    const {
+      packageName, oldVersion, newVersion, bumpLevel,
+    } = parsePrTitle(
       pullRequest,
       context,
     );
@@ -66,7 +68,8 @@ module.exports = (app) => {
     //     'Merged Pull Request 👍',
     //   );
     // }
-    return;
+
+    return log.info('Completed working on opened pull request.');
   });
 
   // to run when a pull request us edited, specifically to run after dependabot has rebased a PR
@@ -107,7 +110,8 @@ module.exports = (app) => {
     //     'Merged Pull Request 👍',
     //   );
     // }
-    return;
+
+    return log.info('Completed merging edited pull request.');
   });
 
   // to run when a pull_request is closed
@@ -123,8 +127,7 @@ module.exports = (app) => {
       return log.info(context, 'PR not merged, just closed!');
     }
 
-    const iAmMerger =
-      (await getBotName(context)) === pullRequest.merged_by.login.toLowerCase();
+    const iAmMerger = (await getBotName(context)) === pullRequest.merged_by.login.toLowerCase();
 
     // check if the PR is merged by the bot
     if (!iAmMerger) {
@@ -152,6 +155,7 @@ module.exports = (app) => {
         'delete_branch set to false in config file, not deleting branch!',
       );
     }
-    return;
+
+    return log.info('Completed working on closed pull request.');
   });
 };

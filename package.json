@@ -17,13 +17,17 @@
   ],
   "scripts": {
     "dev": "nodemon --exec \"npm start\"",
-    "start": "probot run ./src/app.js"
+    "start": "probot run ./src/app.js",
+    "lint": "eslint -c .eslintrc.js --ext .js src/** api/**"
   },
   "dependencies": {
     "probot": "^12.2.4",
     "semver": "^7.3.7"
   },
   "devDependencies": {
+    "eslint": "^7.32.0 || ^8.2.0",
+    "eslint-config-airbnb-base": "^15.0.0",
+    "eslint-plugin-import": "^2.25.2",
     "nodemon": "^2.0.19",
     "smee-client": "^1.2.2"
   },

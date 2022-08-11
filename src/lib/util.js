@@ -45,22 +45,19 @@ function findBumpLevel(oldVersion, newVersion) {
  * @returns {Object} containing package name, old version, new version and bump level
  */
 function parsePrTitle(pullRequest, context) {
-  const expression =
-    /^(bump|update) (\S+) (?:requirement )?from (\S+) to (\S+)$/gi;
+  const expression = /^(bump|update) (\S+) (?:requirement )?from (\S+) to (\S+)$/gi;
   const match = expression.exec(pullRequest.title);
 
   if (!match) {
     log.error(
       context,
-      'Error while parsing PR title, expected title: `bump|update <package> requirement  from <old-version> to <new-version>`' +
-        `\nCurrent: ${pullRequest.title}`,
+      'Error while parsing PR title, expected title: `bump|update <package> requirement  from <old-version> to <new-version>`'
+      + `\nCurrent: ${pullRequest.title}`,
     );
   }
 
   // removing the first match because it is the whole string
-  const [, , packageName, oldVersion, newVersion] = match.map((t) =>
-    t.replace(/`/g, ''),
-  );
+  const [, , packageName, oldVersion, newVersion] = match.map((t) => t.replace(/`/g, ''));
   const isValid = isValidSemver(oldVersion) && isValidSemver(newVersion);
 
   return {
