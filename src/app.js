@@ -1,7 +1,7 @@
 const { readConfig } = require('./lib/check-config');
 const {
   getBotName,
-  // mergePullRequest,
+  mergePullRequest,
   allCheckRunsCompleted,
   // comment,
 } = require('./lib/api');
@@ -59,7 +59,7 @@ module.exports = (app) => {
     }
 
     // merge the pull request
-    // const isMerged = await mergePullRequest(context, owner, repo, pullRequest);
+    await mergePullRequest(context, owner, repo, pullRequest);
     // if (isMerged) {
     //   await comment(
     //     context.octokit,
@@ -69,7 +69,7 @@ module.exports = (app) => {
     //   );
     // }
 
-    return log.info('Completed working on opened pull request.');
+    return null;
   });
 
   // to run when a pull request us edited, specifically to run after dependabot has rebased a PR
@@ -101,7 +101,7 @@ module.exports = (app) => {
     }
 
     // merge the pull request
-    // const isMerged = await mergePullRequest(context, owner, repo, pullRequest);
+    await mergePullRequest(context, owner, repo, pullRequest);
     // if (isMerged) {
     //   await comment(
     //     context.octokit,
@@ -111,7 +111,7 @@ module.exports = (app) => {
     //   );
     // }
 
-    return log.info('Completed merging edited pull request.');
+    return null;
   });
 
   // to run when a pull_request is closed
@@ -156,6 +156,6 @@ module.exports = (app) => {
       );
     }
 
-    return log.info('Completed working on closed pull request.');
+    return null;
   });
 };
